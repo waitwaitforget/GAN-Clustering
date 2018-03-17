@@ -13,6 +13,7 @@ import torch.utils.data
 import torchvision.datasets as dset 
 import torchvision.transforms as transforms
 import torchvision.utils as vutils
+from tensorboard_logger import configure, log_value
 from torch.autograd import Variable
 from model import Discriminator, Generator
 from utils.utility import mkdir_p, generate_image
@@ -42,6 +43,8 @@ parser.add_argument('--manualSeed', type=int, help='manual seed')
 opt = parser.parse_args()
 
 dtype = torch.FloatTensor
+
+configure("tensorboard/" + opt.exp_name)
 
 print('Options:', opt)
 
@@ -242,6 +245,11 @@ with open(os.path.join(opt.outf, opt.exp_name, 'log.csv'), 'wb') as log:
 			plot('errG', G_cost, iter_idx)
 			plot('errD_real', entropy2_real, iter_idx)
 			plot('errD_fake', entropy2_fake, iter_idx)
+
+			log_value('errD', D_cost, iter_idx)
+			log_value('errG', G_cost, iter_idx)
+			log_value('errD_real', entropy2_real, iter_idx)
+			log_value('errD_fake', entropy2_fake, iter_idx)
 
 			log_writer.writerow([D_cost[0], G_cost[0], entropy2_real[0], entropy2_fake[0]])
 
